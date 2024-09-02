@@ -6,7 +6,7 @@ def extract_video_data(data, video_name, current_folder):
 
 
     # print("data is --->",data)
-    conversation, spk0_time, spk1_time, sentence_wpm = conversation_data(data, video_name, current_folder)
+    conversation, spk0_time, spk1_time, sentence_wpm,sentence_duration = conversation_data(data, video_name, current_folder)
    
     spk0_content = {}
     spk1_content = {}
@@ -22,7 +22,7 @@ def extract_video_data(data, video_name, current_folder):
     print(spk0_content)
     print(spk1_content)
     
-    return conversation, spk0_content, spk1_content, spk0_time, spk1_time,sentence_wpm 
+    return conversation, spk0_content, spk1_content, spk0_time, spk1_time,sentence_wpm ,sentence_duration
 
 def conversation_data(data, video_name, current_folder):
     sentence_duration = {}

@@ -1,7 +1,7 @@
 import os
 import utlis
 import json
-from aws import S3VideoManager
+from aws import AwsManager
 from content_analysis import ContentAnalyzer
 from audio_analysis import Audio_Analysis
 
@@ -10,7 +10,7 @@ class InterviewAnalyzer:
     def __init__(self, video):
         
         self.video_name = video.split('.')[0]
-        self.S3VideoManager = S3VideoManager(video)
+        self.AwsManager = AwsManager(video)
         self.ContentAnalyzer = ContentAnalyzer() 
         self.AudioAnalyzer =  Audio_Analysis()
         self.output_folder = "output"
@@ -31,12 +31,12 @@ class InterviewAnalyzer:
         
 
     def run(self):
-        self.S3VideoManager.upload_video_to_s3()
-        self.S3VideoManager.transcription()
-        self.data = self.S3VideoManager.save_output(self.current_folder)
-        self.conversation, self.spk0_content, self.spk1_content, self.spk0_time, self.spk1_time,self.sentence_wpm = utlis.extract_video_data(self.data, self.video_name, self.current_folder)
+        self.AwsManager.upload_video_to_s3()
+        self.AwsManager.transcription()
+        self.data = self.AwsManager.save_output(self.current_folder)
+        self.conversation, self.spk0_content, self.spk1_content, self.spk0_time, self.spk1_time,self.sentence_wpm ,self.sentence_duration= utlis.extract_video_data(self.data, self.video_name, self.current_folder)
         self.content_result = self.ContentAnalyzer.run(self.spk0_content,self.spk1_content)
-        self.audio_result = self.AudioAnalyzer.run(self.input_folder,self.video_name,self.sentence_wpm, self.sentence_duration)
+        self.audio_result = self.AudioAnalyzer.run(self.input_folder,self.video_name,self.sentence_wpm, self.sentence_duration, self.spk1_content)
         self.save_results()
         return self.content_result, self.audio_result
     

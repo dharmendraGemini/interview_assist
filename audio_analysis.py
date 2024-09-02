@@ -15,7 +15,7 @@ class Audio_Analysis:
   def run(self, input_folder, video_name, sentence_duration, sentence_wpm, spk1_content):
     self.video_path = f'{input_folder}/{video_name}.mp4'
     self.convert_video_to_audio(video_name)
-    self.audio_score['tone_score'] = self.get_audio_fluency_score( sentence_duration)
+    self.audio_score['tone_score'] = self.get_audio_tone_score( sentence_duration)
     self.audio_score['fluency_score'] =  self.get_audio_fluency_score(sentence_wpm, spk1_content)
     
     return self.audio_score

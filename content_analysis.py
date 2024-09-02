@@ -1,6 +1,7 @@
 import os
 import json
 import utlis
+from pprint import pprint
 from groq import Groq
 from dotenv import load_dotenv
 
@@ -25,12 +26,12 @@ class ContentAnalyzer:
     def run(self, spk0_content, spk1_content):
         self.grammar_errors = self.grammar_check(spk1_content)
         self.content_result['grammar_score'] = self.calculate_grammar_score(spk1_content)
-        self.content_result['repetition_score'] = self.calculate_repetition_score(spk1_content)
+      
         self.content_similarity_result = self.content_similarity(self.ideal_ans, spk0_content, spk1_content)
         self.content_result['ans_validation_score'] = self.content_similarity_result['similarity_score']
         self.content_result['clarity'] = self.content_similarity_result['clarity_score']
         self.content_result['coherence'] = self.content_similarity_result['coherence_score']
-        self.content_result['optimal_repetetion'] = self.calculate_repetition_score(self.grammar_errors['total_repetitions'],spk1_content)
+        self.content_result['optimal_repetetion'] = self.calculate_repetition_score(spk1_content)
         
 
         return self.content_result
@@ -108,6 +109,8 @@ class ContentAnalyzer:
         ]
         
         response_text = self._request_groq_completion(model="llama3-70b-8192", messages=messages)
+        print('grammar check')
+        pprint(response_text)
         return json.loads(response_text)
 
     def content_similarity(self, ideal_answer, question, candidate_answer):
@@ -138,11 +141,15 @@ class ContentAnalyzer:
                 "clarity_score": Ensure the text is clear and easy to understand. This involves checking for ambiguous phrases and ensuring the message is straightforward.
                 "consistency_score": Check for consistent use of tense, point of view, and terminology throughout the text.
                 "coherence_score": Look at how well the ideas flow together. Each sentence and paragraph should logically connect to the next.
+                Note:
+                - Please provide the final response in JSON format only. No additional text or explanations are needed.
                 """
             }
         ]
         
         response_text = self._request_groq_completion(model="llama3-70b-8192", messages=messages)
+        print('content similarity-->')
+        pprint(response_text)
         return json.loads(response_text)
 
     def calculate_grammar_score(self, spk1_content):

@@ -7,7 +7,7 @@ from botocore.exceptions import ClientError
 
 
 
-class S3VideoManager:
+class AwsManager:
     def __init__(
             self, 
             video, 
@@ -124,9 +124,6 @@ class S3VideoManager:
 
         return data                                 
 
-def main():
-    video_manager = S3VideoManager(video='better-video.mp4')
-    video_manager.upload_video_to_s3()
-    video_manager.transcription()
+
 
 
