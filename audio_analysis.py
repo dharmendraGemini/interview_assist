@@ -12,7 +12,8 @@ class Audio_Analysis:
     self.audio_path = None
     
 
-  def run(self, input_folder, video_name, sentence_duration, sentence_wpm, spk1_content):
+  def run(self, input_folder, video_name, sentence_wpm, sentence_duration, spk1_content):
+    print('video name in audio analysis', video_name)
     self.video_path = f'{input_folder}/{video_name}.mp4'
     self.convert_video_to_audio(video_name)
     self.audio_score['tone_score'] = self.get_audio_tone_score( sentence_duration)
@@ -34,6 +35,7 @@ class Audio_Analysis:
     
     
   def get_audio_tone_score(self, sentence_duration):
+    print('sentence duration in audio analysis: ', sentence_duration)
     audio = AudioSegment.from_wav(self.audio_path)
     scores = []
     for i, data in sentence_duration.items():

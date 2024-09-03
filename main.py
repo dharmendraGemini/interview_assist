@@ -36,6 +36,7 @@ class InterviewAnalyzer:
         self.data = self.AwsManager.save_output(self.current_folder)
         self.conversation, self.spk0_content, self.spk1_content, self.spk0_time, self.spk1_time,self.sentence_wpm ,self.sentence_duration= utlis.extract_video_data(self.data, self.video_name, self.current_folder)
         self.content_result = self.ContentAnalyzer.run(self.spk0_content,self.spk1_content)
+        print('video name in main: ', self.video_name)
         self.audio_result = self.AudioAnalyzer.run(self.input_folder,self.video_name,self.sentence_wpm, self.sentence_duration, self.spk1_content)
         self.save_results()
         return self.content_result, self.audio_result
@@ -74,7 +75,7 @@ class InterviewAnalyzer:
 
 
 if __name__ == "__main__":
-    video = 'better-video.mp4'
+    video = 'better2.mp4'
     
     interview_analyzer  = InterviewAnalyzer(video)
     content_result, audio_result = interview_analyzer.run()
