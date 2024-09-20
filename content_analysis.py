@@ -4,6 +4,7 @@ import utlis
 from pprint import pprint
 from groq import Groq
 from dotenv import load_dotenv
+from utlis import combined_data
 
 class ContentAnalyzer:
     def __init__(self):
@@ -19,6 +20,7 @@ class ContentAnalyzer:
         self.coherence = None
         self.optimal_repetition = None
         self.content_result = {}
+        self.question_wise_data = utlis.combined_data()
 
 
 
@@ -36,6 +38,9 @@ class ContentAnalyzer:
 
         return self.content_result
 
+    def question_wise_result(self):
+        # for i in self.question_wise_data:
+        pass
 
 
 

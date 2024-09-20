@@ -1,21 +1,26 @@
 import os
 import utlis
 import json
+import time
 from aws import AwsManager
 from content_analysis import ContentAnalyzer
 from audio_analysis import Audio_Analysis
+from video_analysis import VideoAnalyzer
 
 
 class InterviewAnalyzer:
     def __init__(self, video):
-        
+        self.start_time = time.time();
         self.video_name = video.split('.')[0]
         self.AwsManager = AwsManager(video)
         self.ContentAnalyzer = ContentAnalyzer() 
         self.AudioAnalyzer =  Audio_Analysis()
+        self.VideoAnalyzer = VideoAnalyzer('assests/shape_predictor_68_face_landmarks.dat')  
+
         self.output_folder = "output"
         self.data = None
         self.current_folder = self.create_output_dir(self.output_folder)
+        
         self.conversation =None
         self.spk0_content=None
         self.spk1_content = None
@@ -23,9 +28,15 @@ class InterviewAnalyzer:
         self.spk1_time = None
         self.sentence_wpm = None
         self.content_result = {}
+        self.audio_result = {}
+        self.video_result = {}
         self.input_folder = 'input'
+        self.video_path = f"{self.input_folder}/{self.video_name}.mp4"
         self.sentence_duration = None
         self.final_result ={}
+        self.ques_ans_data= {}
+        
+
         
 
         
@@ -34,18 +45,22 @@ class InterviewAnalyzer:
         self.AwsManager.upload_video_to_s3()
         self.AwsManager.transcription()
         self.data = self.AwsManager.save_output(self.current_folder)
-        self.conversation, self.spk0_content, self.spk1_content, self.spk0_time, self.spk1_time,self.sentence_wpm ,self.sentence_duration= utlis.extract_video_data(self.data, self.video_name, self.current_folder)
+        self.conversation, self.spk0_content, self.spk1_content, self.spk0_time, self.spk1_time,self.sentence_wpm ,self.sentence_duration, self.ques_ans_data = utlis.extract_video_data(self.data, self.video_name, self.current_folder)
         self.content_result = self.ContentAnalyzer.run(self.spk0_content,self.spk1_content)
         print('video name in main: ', self.video_name)
         self.audio_result = self.AudioAnalyzer.run(self.input_folder,self.video_name,self.sentence_wpm, self.sentence_duration, self.spk1_content)
+        self.video_result = self.VideoAnalyzer.analyze_video(self.video_path)
         self.save_results()
+        print( " execution time is-->", time.time()- self.start_time)
         return self.content_result, self.audio_result
     
 
     def save_results(self):
         self.final_result['content_score']= self.content_result
         self.final_result['audio_score'] = self.audio_result
+        self.final_result['video_score'] =  self.video_result
         final_result_file = f'{self.current_folder}/{self.video_name}_results.txt'
+
         with open(final_result_file, 'w') as file:
             file.write(json.dumps(self.final_result, indent=4))
 
@@ -75,7 +90,7 @@ class InterviewAnalyzer:
 
 
 if __name__ == "__main__":
-    video = 'better2.mp4'
+    video = 'data_modelling.mp4'
     
     interview_analyzer  = InterviewAnalyzer(video)
     content_result, audio_result = interview_analyzer.run()
